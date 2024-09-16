@@ -65,12 +65,12 @@ class Question(_subject: String, _questionString: String) {
         var input = _input.toCharArray()
         var char: Char
 
-        var tempo_buffer1 = ""
+        var tempo_buffer1: String = ""
         var tempo_buffer2: String = ""
 
         var index = 0
 
-        while (num1 <= 1 && num2 <= 1 && num3 <= 1 && num4 <= 1){
+        while (num1 > 1 || num2 > 1 || num3  > 1 || num4 > 1){
             char = input[index]
             when(char){
                 '①' -> num1--
@@ -78,7 +78,7 @@ class Question(_subject: String, _questionString: String) {
                 '③' -> num3--
                 '④' -> num4--
             }
-            tempo_buffer1.plus(char)
+            tempo_buffer1 = tempo_buffer1 + char
             index++
         }
         if (index < input.size) {
@@ -99,7 +99,6 @@ class Question(_subject: String, _questionString: String) {
 
 
 
-
     fun UnusaulChoiceDiscriminator(inputString: String): Array<Int> { // return 리스트의 0번째 값 = 0 이면 정상 / 1 이면 특수케이스 / -1이면 비정상 케이스
         var Choice = arrayOf(0, 0, 0, 0, 0)
 
@@ -114,7 +113,7 @@ class Question(_subject: String, _questionString: String) {
         }
         if (Choice[1] == 1 && Choice[2] == 1 && Choice[3] == 1 && Choice[4] == 1) { //Choice[0]이 0이면 일반적 문제
             return Choice
-        } else if (Choice[1] > 1 && Choice[2] > 1 && Choice[3] > 1 && Choice[4] > 1) {//Choice[0]이 1이면 특별한 형식의 문제
+        } else if (Choice[1] > 1 || Choice[2]  > 1 ||  Choice[3] > 1 || Choice[4] > 1) {//Choice[0]이 1이면 특별한 형식의 문제
             Choice[0] = 1
             return Choice
         } else {
@@ -131,16 +130,23 @@ class Question(_subject: String, _questionString: String) {
 }
 
 fun InputText_to_db(inputStream: InputStream) {
-    val inputString = inputStream.bufferedReader().use { it.readLines() }
-    var inputOneSentencs: String
-    var questionNum: Int // 문제 개수를 세는 배열
+    val QuestionList = MakeQuestionArrayList(inputStream)
 
-    val questionTextList = ArrayList<String>() // 문제 본문을 저장하는 배열
-    val answerList = ArrayList<ArrayList<String>>() // 답을 저장하는 이차원 배열
+    val QustionObjectList = ArrayList<Question>()
 
-    val data1 = ArrayList<String>()
+    for (questionString in QuestionList){
+        QustionObjectList.add(Question("주제", questionString))
+    }
 
+    println("주제는:" + QustionObjectList[0].subject)
 
+    for (QuestionObject in QustionObjectList){
+        println("문제: " + QuestionObject.QuestionContent)
+        println("1번: " +  QuestionObject.Choice1)
+        println("2번: " + QuestionObject.Choice2)
+        println("3번: " + QuestionObject.Choice3)
+        println("4번: " + QuestionObject.Choice4)
+    }
 
 
 }
