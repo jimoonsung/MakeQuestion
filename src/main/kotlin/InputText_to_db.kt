@@ -56,7 +56,43 @@ class Question(_subject: String, _questionString: String) {
         Choice3 = compo_buffer[3]
         Choice4 = compo_buffer[4]
     }
-    fun ByUnusaual(input: String, num1: Int, num2: Int, num3: Int, num4: Int){
+    fun ByUnusaual(_input: String, _num1: Int, _num2: Int, _num3: Int, _num4: Int){
+        var num1 = _num1
+        var num2 = _num2
+        var num3 = _num3
+        var num4 = _num4
+
+        var input = _input.toCharArray()
+        var char: Char
+
+        var tempo_buffer1 = ""
+        var tempo_buffer2: String = ""
+
+        var index = 0
+
+        while (num1 <= 1 && num2 <= 1 && num3 <= 1 && num4 <= 1){
+            char = input[index]
+            when(char){
+                '①' -> num1--
+                '②' -> num2--
+                '③' -> num3--
+                '④' -> num4--
+            }
+            tempo_buffer1.plus(char)
+            index++
+        }
+        if (index < input.size) {
+            tempo_buffer2 = String(input.copyOfRange(index, input.size))
+        }
+
+        val tempo_buffer3 = tempo_buffer2.split(Regex("①|②|③|④"))
+
+
+        QuestionContent = tempo_buffer1 + tempo_buffer3[0]
+        Choice1 = tempo_buffer3[1]
+        Choice2 = tempo_buffer3[2]
+        Choice3 = tempo_buffer3[3]
+        Choice4 = tempo_buffer3[4]
 
     }
 
