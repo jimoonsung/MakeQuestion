@@ -25,71 +25,44 @@ import javax.security.auth.Subject
 ④ ㉠ 성별 ㉡ 영상 ㉢ 연동
  */
 
-class Question(subject: String, stringStream: String) {
+class Question(_subject: String, _questionString: String) {
 
-    val stringStream = stringStream
-    val SubjectOfQuestion = subject
+    val subject = _subject
+    val questionString = _questionString
     var QuestionContent = ""
-    var QuestionContentBoolean = false
-    var Passage = ""
-    var PassageBoolean = false
     var Choice1 = ""
-    var Choice1Boolean = false
     var Choice2 = ""
-    var Choice2Boolean = false
     var Choice3 = ""
-    var Choice3Boolean = false
     var Choice4 = ""
-    var Choice4Boolean = false
-    var QuestionLength = 0
 
-    fun QuestionMain() {
 
-        for (char in stringStream.toCharArray()) {
-            QuestionLength++
-            if (QuestionContentBoolean == false) {
-                if (char == '?') {
-                    QuestionContentBoolean = true
-                }
-                QuestionContent.plus(char)
-            } else if (PassageBoolean == false) {
-                if (char == '①') {
-                    PassageBoolean = true
-                    continue
-                }
-                Passage.plus(char)
-            } else if (Choice1Boolean == false) {
-                if (char == '②') {
-                    Choice1Boolean == true
-                    continue
-                }
-                Choice1.plus(char)
-            } else if (Choice2Boolean == false) {
-                if (char == '③') {
-                    Choice2Boolean == true
-                    continue
-                }
-                Choice2.plus(char)
-            } else if (Choice3Boolean == false) {
-                if (char == '④') {
-                    Choice3Boolean == true
-                    continue
-                }
-                Choice3.plus(char)
-            } else if (Choice4Boolean == false) { //특수케이스
-                if (char == '②') {
-                    Choice4Boolean == true
-                    continue
-                }
-                Choice4.plus(char)
-            }
 
+    init {
+        val QuestionIsUsuaulOrUnusuaul = UnusaulChoiceDiscriminator(questionString)
+
+        when(QuestionIsUsuaulOrUnusuaul[0]){
+            0 -> ByUsaul(questionString)
+            1 -> ByUnusaual(questionString, QuestionIsUsuaulOrUnusuaul[1], QuestionIsUsuaulOrUnusuaul[2], QuestionIsUsuaulOrUnusuaul[3], QuestionIsUsuaulOrUnusuaul[4])
+            -1 -> println("오류입니다.")
         }
     }
 
-    fun isDigitBetweenOneAndNine(c: Char): Boolean {
-        return c in '1'..'9'
+    fun ByUsaul(input:String) {
+        val compo_buffer = input.split(Regex("①|②|③|④"))
+
+        QuestionContent = compo_buffer[0]
+        Choice1 = compo_buffer[1]
+        Choice2 = compo_buffer[2]
+        Choice3 = compo_buffer[3]
+        Choice4 = compo_buffer[4]
     }
+    fun ByUnusaual(input: String, num1: Int, num2: Int, num3: Int, num4: Int){
+
+    }
+
+
+
+
 
     fun UnusaulChoiceDiscriminator(inputString: String): Array<Int> { // return 리스트의 0번째 값 = 0 이면 정상 / 1 이면 특수케이스 / -1이면 비정상 케이스
         var Choice = arrayOf(0, 0, 0, 0, 0)
@@ -103,26 +76,19 @@ class Question(subject: String, stringStream: String) {
                 '④' -> Choice[4]++
             }
         }
-        if (Choice[1] == 1 && Choice[2] == 1 && Choice[3] == 1 && Choice[4] == 1) {
+        if (Choice[1] == 1 && Choice[2] == 1 && Choice[3] == 1 && Choice[4] == 1) { //Choice[0]이 0이면 일반적 문제
             return Choice
-        } else if (Choice[1] > 1 && Choice[2] > 1 && Choice[3] > 1 && Choice[4] > 1) {
+        } else if (Choice[1] > 1 && Choice[2] > 1 && Choice[3] > 1 && Choice[4] > 1) {//Choice[0]이 1이면 특별한 형식의 문제
             Choice[0] = 1
             return Choice
         } else {
-            println("전형적인 문제 형식이 아닐 가능성이 있습니다. 전형적인 문제형식으로 수정해주세요")
+            println("전형적인 문제 형식이 아닐 가능성이 있습니다. 전형적인 문제형식으로 수정해주세요") // 오류
             Choice[0] = -1
             return Choice
         }
 
 
     }
-
-
-    //문제의 처음부터 끝까지를 체크하는 함수가 필요함!!!!
-
-
-
-
 
 
 
@@ -140,86 +106,61 @@ fun InputText_to_db(inputStream: InputStream) {
 
 
 
-    var checkStartPoint: Boolean
-    var checkEndPoint: Boolean
-    questionNum = 1
-    var inputCharArray: CharArray
-    var indexList = 0
+
+}
+fun isDigitBetweenOneAndNine(c: Char): Boolean { // 숫자인지 확인하는 함수
+    return c in '1'..'9'
+}
+
+fun ChangelineToSpace(inputString:String): String{ // 줄바꿈을 공백으로 바꾸는 함수
+    return  inputString.replace("\\r\\n|\\r|\\n|\\n\\r".toRegex()," ")
+}
+fun ProcessingCompleteStringList(inputString: List<String>): ArrayList<String>{
+    var outputString = ArrayList<String>()
+    var producingString = ArrayList(inputString)
     var index = 0
 
-    checkStartPoint = true
-    checkEndPoint = false
-    var middleQuestion = false
+    for (component in producingString){
+        var choice1_check = false
+        var choice2_check = false
+        var choice3_check = false
+        var choice4_check = false
+        
+        component.trimIndent()
 
-
-    while (index <= inputString.lastIndex) {
-        inputCharArray = inputString[index].toCharArray()
-        for (char in inputCharArray) {
-            println(char)
-            if (isDigitBetweenOneAndNine(char)) {
-                if (checkStartPoint == true && checkEndPoint == true) { // 본문 중 숫자
-                    continue
-                } else if (checkStartPoint == true && checkEndPoint == false) { // 문제 중간구성번호
-                    continue
-                } else if (checkStartPoint == false && checkEndPoint == false) { // 문제 시작번호
-                    checkStartPoint = true
-                } else if (checkStartPoint == false && checkEndPoint == true) {
-
-                }
-
-
-            } else if (char == '.') {
-                if (checkStartPoint == true && checkEndPoint == false) { // 문제 번호 끝 점
-                    checkEndPoint == true
-                } else if (checkStartPoint == true && checkEndPoint == true) { // 문제 중 '.'
-                    continue
-                }
-            } else if (char == '?') {
-                if (checkStartPoint == true && checkEndPoint == true) { // 문제 본문 끝 '?'
-                    checkStartPoint = false
-                    checkEndPoint = false
-                    middleQuestion = true
-                } else {
-                    continue
-                }
-                questionTextList[questionNum].plus(char)
-            } else {
-                if (checkStartPoint == true && checkEndPoint == false) { // 문제 본문
-                    if (char == '①') {
-
-                    } else if (char == '②') {
-
-                    } else if (char == '③') {
-
-                    } else if (char == '④') {
-
-                    }
-                    questionTextList[questionNum].plus(char)
-                }
+        for (char in component){
+            if (char == '①') {
+                choice1_check = true
             }
-
+            else if (char == '②'){
+                choice2_check = true
+            }
+            else if (char == '③'){
+                choice3_check = true
+            }
+            else if (char == '④'){
+                choice4_check = true
+            }
         }
+        
+        if (choice1_check && choice2_check && choice3_check && choice4_check){
+            outputString.add(component)
+        }
+        else{
+            producingString[index + 1] = component + producingString[index + 1]
+        }
+
         index++
     }
 
-    while (index <= inputString.lastIndex) {
-        inputCharArray = inputString[index].toCharArray()
-        for (char in inputCharArray) {
-            println(char)
-        }
-    }
-
-    println("/")
-    println("①")
-    println("②")
-    println("③")
-    println("④")
-
-    println(inputString)
+    return outputString
 }
-    fun isDigitBetweenOneAndNine(c: Char): Boolean {
-        return c in '1'..'9'
-    }
-fun CuttingStreamToQuestion(): String{
+fun SplitStringbyNum(inputString: String): List<String>{
+    val outputstring = ChangelineToSpace(inputString)
+    return outputstring.split(Regex("\\d+\\."))
+}
 
+fun MakeQuestionArrayList(inputStream: InputStream): ArrayList<String>{
+    val inputString = inputStream.bufferedReader().use{it.readText()}
+    return ProcessingCompleteStringList(SplitStringbyNum(inputString))
 }

@@ -4,7 +4,8 @@ import java.io.File
 import java.io.InputStream
 
 fun main(){
-    /*var fin = FileInputStream("C:\\Users\\jimoonsung2\\IdeaProjects\\MakeQuestion\\src\\main\\data.txt")
+    /*
+    var fin = FileInputStream("C:\\Users\\jimoonsung2\\IdeaProjects\\MakeQuestion\\src\\main\\data.txt")
     var fout = FileOutputStream("./dataout.txt")
 
     var data = fin.read()
@@ -29,10 +30,15 @@ fun main(){
     fin1.close()
 */
     val inputStream: InputStream = File("C:\\\\Users\\\\jimoonsung2\\\\IdeaProjects\\\\MakeQuestion\\\\src\\\\main\\\\data.txt").inputStream()
-    //val inputString = inputStream.bufferedReader().use{it.readLines()}
+    //val inputString = inputStream.bufferedReader().use{it.readText()}
     //println(inputString)
 
-    InputText_to_db(inputStream)
+    //InputText_to_db(inputStream)
+    //println(CuttingStreamToQuestion(inputStream))
 
+
+    //println(ChangelineToSpace(inputString))
+    println(MakeQuestionArrayList(inputStream))
+    inputStream.close()
 }
 
