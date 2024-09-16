@@ -26,7 +26,12 @@ import javax.security.auth.Subject
  */
 
 class Question(_subject: String, _questionString: String) {
-
+/*
+문제 객체
+문제본문과 선지를 저장하는 변수들로 구성됨
+생성될 때마다 하나의 문제를 담을 수 있는 객체가 생성됨
+일정한 함수의 사용없이 바로 문제객체가 완전히 생성됨
+ */
     val subject = _subject
     val questionString = _questionString
     var QuestionContent = ""
@@ -37,7 +42,7 @@ class Question(_subject: String, _questionString: String) {
 
 
 
-    init {
+    init { // 문제 객체 생성자
         val QuestionIsUsuaulOrUnusuaul = UnusaulChoiceDiscriminator(questionString)
 
         when(QuestionIsUsuaulOrUnusuaul[0]){
@@ -47,7 +52,7 @@ class Question(_subject: String, _questionString: String) {
         }
     }
 
-    fun ByUsaul(input:String) {
+    fun ByUsaul(input:String) { // 일반적인 문제형식을 문제 객체로 변환하는 함수
         val compo_buffer = input.split(Regex("①|②|③|④"))
 
         QuestionContent = compo_buffer[0]
@@ -56,7 +61,7 @@ class Question(_subject: String, _questionString: String) {
         Choice3 = compo_buffer[3]
         Choice4 = compo_buffer[4]
     }
-    fun ByUnusaual(_input: String, _num1: Int, _num2: Int, _num3: Int, _num4: Int){
+    fun ByUnusaual(_input: String, _num1: Int, _num2: Int, _num3: Int, _num4: Int){ // '①' 같은 것이 두번 이상 나오는 전형적이지 못한 문제형식을 문제 객체로 변환하는 함수
         var num1 = _num1
         var num2 = _num2
         var num3 = _num3
@@ -157,7 +162,7 @@ fun isDigitBetweenOneAndNine(c: Char): Boolean { // 숫자인지 확인하는 �
 fun ChangelineToSpace(inputString:String): String{ // 줄바꿈을 공백으로 바꾸는 함수
     return  inputString.replace("\\r\\n|\\r|\\n|\\n\\r".toRegex()," ")
 }
-fun ProcessingCompleteStringList(inputString: List<String>): ArrayList<String>{
+fun ProcessingCompleteStringList(inputString: List<String>): ArrayList<String>{ // 빈 요소나 문제가 반으로 잘려 저장된 요소를 합쳐 완전한 문제 list를 만드는 함수
     var outputString = ArrayList<String>()
     var producingString = ArrayList(inputString)
     var index = 0
@@ -197,12 +202,12 @@ fun ProcessingCompleteStringList(inputString: List<String>): ArrayList<String>{
 
     return outputString
 }
-fun SplitStringbyNum(inputString: String): List<String>{
+fun SplitStringbyNum(inputString: String): List<String>{ // 숫자+.으로 이루어진 곳을 기준으로 문자열을 자르는 함수
     val outputstring = ChangelineToSpace(inputString)
     return outputstring.split(Regex("\\d+\\."))
 }
 
-fun MakeQuestionArrayList(inputStream: InputStream): ArrayList<String>{
+fun MakeQuestionArrayList(inputStream: InputStream): ArrayList<String>{//한 문제를 한 요소로 하는 리스트를 만드는 함수
     val inputString = inputStream.bufferedReader().use{it.readText()}
     return ProcessingCompleteStringList(SplitStringbyNum(inputString))
 }
